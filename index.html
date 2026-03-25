@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotebookLM 教育訓練教案提案</title>
+    <!-- 引入高質感字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS 變數定義，營造高對比、易讀的科技風格 (深色模式 + 邊界高光) */
+        :root {
+            --primary: #3b82f6;      
+            --primary-light: #60a5fa;
+            --primary-glow: #38bdf8; 
+            --accent: #10b981;       
+            --accent-glow: #34d399;  
+            --warning: #f59e0b;      
+            --warning-glow: #fbbf24; /* 強光黃 (用於強調重點) */
+            --bg-dark: #0f172a;      
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            /* 調整卡片背景，讓它更暗更不透明，以凸顯白色與黃色文字 */
+            --card-bg: rgba(30, 41, 59, 0.9); 
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;    /* 標題純白 */
+            --text-body: #e2e8f0;    /* 內文亮白 */
+            --text-muted: #cbd5e1;   /* 輔助白，不能太暗 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* 抽象動態背景光暈 */
+        .blob {
+            position: fixed;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.35; /* 降低背景光暈亮度，避免搶走卡片主角 */
+            animation: float 12s infinite ease-in-out alternate;
+            border-radius: 50%;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #3b82f6; }
+        .blob-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #8b5cf6; animation-delay: -6s;}
+        .blob-3 { top: 40%; left: 60%; width: 30vw; height: 30vw; background: #0ea5e9; animation-delay: -3s;}
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(30px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 首屏 Hero 區塊 */
+        header {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .pill-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary-glow);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #ffffff, #bae6fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero-quote {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--text-body);
+            max-width: 800px;
+            margin: 2.5rem auto 0;
+            padding: 3.5rem 2.5rem 2.5rem; /* 加大上方留白，避免被 icon 蓋住 */
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        .hero-quote::before {
+            content: '🎯';
+            position: absolute;
+            top: -35px; /* 把圖示往上推 */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.8rem;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            line-height: 1; /* 防止多餘的行高干擾高度 */
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-quote strong {
+            color: var(--warning-glow); /* 將首屏重點改為亮黃色 */
+            font-weight: 800;
+        }
+
+        /* 內容區塊標題 */
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        
+        .section-subtitle {
+            color: var(--primary-glow);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        /* 關卡卡片網格 (3欄) */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px; /* 俐落圓角 */
+            padding: 2.5rem 2rem; /* 加大內部 padding */
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* 強烈陰影拉開層次 */
+        }
+
+        /* 頂部彩色指標：讓所有的卡片在視覺上區別更明顯 */
+        .card:nth-child(1) { border-top: 5px solid #3b82f6; } /* 第一關 - 藍 */
+        .card:nth-child(2) { border-top: 5px solid #8b5cf6; } /* 第二關 - 紫 */
+        .card:nth-child(3) { border-top: 5px solid #10b981; } /* 第三關 - 綠 */
+
+        .ux-card { border-top: 5px solid #0ea5e9; }
+        .extra-card { border-top: 5px solid #f59e0b; }
+
+        /* 滾動動畫觸發 Class */
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .card .time-tag {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 2rem;
+            align-self: flex-start;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-list {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .feature-list li {
+            margin-bottom: 1.5rem; /* 加大重點之間的行距 */
+            position: relative;
+            padding-left: 28px; /* 替 icon 留白 */
+            color: var(--text-body);
+            font-size: 1.05rem; /* 字體微調大 */
+            line-height: 1.6;
+        }
+
+        /* 將原本的子項目黑點換成更明顯的圖示 */
+        .feature-list li::before {
+            content: '📌';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1.1rem;
+        }
+        
+        /* 💡 最重要的：高對比 highlight 裡面的 strong 重點 */
+        .feature-list li strong {
+            color: var(--warning-glow); /* 重點字使用亮黃色 */
+            font-weight: 800;
+            background: rgba(251, 191, 36, 0.15); /* 底部加淡黃底色 */
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-right: 4px;
+            box-shadow: inset 0 0 10px rgba(251, 191, 36, 0.1);
+        }
+
+        .highlight-box {
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05));
+            border-left: 5px solid var(--accent-glow);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: #ffffff;
+            box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+        
+        .highlight-box strong {
+            color: var(--accent-glow); /* 亮綠色重點 */
+            background: none;
+            padding: 0;
+            box-shadow: none;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+
+        /* 下方雙欄網格 (UX 與 Extra) */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        /* 進場動畫設定 */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 響應式修正 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .hero-quote { font-size: 1.1rem; padding: 2rem 1.5rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .card { padding: 2rem; }
+            .section-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 網頁背景的流動漸層色塊 -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="container">
+        <!-- 首屏標題區塊 -->
+        <header>
+            <div class="pill-badge">INTERNAL TRAINING PITCH</div>
+            <h1>NotebookLM 內部教育訓練教案</h1>
+            <div class="hero-quote">
+                課程核心目標<br><br>
+                「讓大家在 <strong>50 分鐘</strong>的課程內，立刻感受到 AI 能確實解決他們<strong>每天工作上的痛點</strong>。」
+            </div>
+        </header>
+
+        <!-- 區塊 1：三大關卡 -->
+        <h2 class="section-title"><span>💡</span> 三個主要調整方向</h2>
+        <p class="section-subtitle">方向 1：根據一般公司發生事項頻率做排序，聚焦高頻痛點。</p>
+        
+        <div class="grid-3">
+            <!-- 卡片 1 -->
+            <div class="card animate-on-scroll">
+                <h3>🎧 第一關：開會錄音神器</h3>
+                <div class="time-tag">約 15 分鐘</div>
+                <ul class="feature-list">
+                    <li><strong>教材設計：</strong>製作一段 3 分鐘「跨區業務會議實況音檔」，內含不同部門的爭論與情緒。</li>
+                    <li><strong>預期成效：</strong>讓學員上傳音檔，展示 AI 不僅能聽懂吵架內容，還能歸納出「最終決議」與「負責人待辦清單」。</li>
+                </ul>
+                <div class="highlight-box">
+                    <strong>🌟 最大亮點：</strong><br>
+                    AI 還能把枯燥錄音，直接生成一段像兩位主持人在聊天的 Podcast 廣播。
+                </div>
+            </div>
+
+            <!-- 卡片 2 -->
+            <div class="card animate-on-scroll" style="transition-delay: 0.15s;">
+                <h3>📝 第二關：多輪會議追蹤總管</h3>
+                <div class="time-tag">約 10 分鐘</div>
+                <ul class="feature-list">
+                    <li><strong>解決痛點：</strong>跨週專案最怕遇到大家互相推託或是進度模糊。</li>
+                    <li><strong>預期成效：</strong>一口氣上傳 5 份連續文字會議紀錄，讓 AI 當貼身秘書，直接橫跨整個月份拉出一張完整的「待辦進度追蹤表」。</li>
+                </ul>
+            </div>
+
+            <!-- 卡片 3 -->
+            <div class="card animate-on-scroll" style="transition-delay: 0.3s;">
+                <h3>📊 第三關：財務報表抓漏大師</h3>
+                <div class="time-tag">約 15 分鐘</div>
+                <ul class="feature-list">
+                    <li><strong>教材設計：</strong>準備一份 3 年份的各區業務與財務數據報表。</li>
+                    <li><strong>預期成效：</strong>讓 AI 充當免費財務稽核，秒速抓出「哪個地區毛利率高得不合理」或是「哪個產品線業績嚴重下滑」。</li>
+                </ul>
+            </div>
+        </div>
+
+        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 4rem 0;">
+
+        <!-- 區塊 2：UX 與延伸挑戰 -->
+        <h2 class="section-title"><span>🛡️</span> 輔助與進階機制</h2>
+        <p class="section-subtitle">方向 2 & 3：確保流暢體驗，同時滿足進階需求。</p>
+
+        <div class="grid-2">
+            <!-- UX 防呆設計 -->
+            <div class="card ux-card animate-on-scroll">
+                <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">⚙️ 徹底防呆設計</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">確保實體課程進度絕不卡關。</p>
+                <ul class="feature-list">
+                    <li><strong>⚡ 快速通關連結：</strong>在網頁教材裡建置專屬網址，一旦點擊就能開啟預先餵好檔案的專案，學員立即無縫接軌繼續練習。</li>
+                    <li><strong>📋 一鍵發問：</strong>練習用的提示詞皆配備「一鍵複製」按鈕，輕點即可貼上發問，確保所有人都能有順暢操作體驗。</li>
+                </ul>
+            </div>
+
+            <!-- 課外挑戰區 -->
+            <div class="card extra-card animate-on-scroll" style="transition-delay: 0.15s;">
+                <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">🎁 課外挑戰區</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">發生頻率較低、難度較高之內容。</p>
+                <ul class="feature-list">
+                    <li><strong>📚 內容取捨：</strong>「十萬字法規分析」與「產業趨勢對比財報」需要雙文件比對，資訊量較大，若硬塞在 1 小時內容中容易消化不良。</li>
+                    <li><strong>🚀 課後延伸：</strong>對學有餘力或有業務需求的同仁，這部份移出主線，下課後可隨時點擊連結帶回家挑戰高階用法。</li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- 滾動進入視野時觸發動畫的 JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    // 當元件進入畫面
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // 觸發後即取消觀察，避免重複播放
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            animatedElements.forEach(el => observer.observe(el));
+            
+            // 例外處理：如果在網頁最頂端，第一排立刻顯示
+            setTimeout(() => {
+                animatedElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    // 如果元件在可視範圍內
+                    if(rect.top < window.innerHeight) {
+                        el.classList.add('visible');
+                    }
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
