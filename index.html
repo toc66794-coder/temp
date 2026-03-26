@@ -8,23 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;600;900&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS 變數定義，營造高對比、易讀的科技風格 (深色模式 + 邊界高光) */
+        /* 🚀 遵循星雲科技 Brand V2 規範 的介面設計 */
         :root {
-            --primary: #3b82f6;      
-            --primary-light: #60a5fa;
-            --primary-glow: #38bdf8; 
-            --accent: #10b981;       
-            --accent-glow: #34d399;  
-            --warning: #f59e0b;      
-            --warning-glow: #fbbf24; /* 強光黃 (用於強調重點) */
-            --bg-dark: #0f172a;      
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            /* 調整卡片背景，讓它更暗更不透明，以凸顯白色與黃色文字 */
-            --card-bg: rgba(30, 41, 59, 0.9); 
-            --card-border: rgba(255, 255, 255, 0.15);
-            --text-main: #ffffff;    /* 標題純白 */
-            --text-body: #e2e8f0;    /* 內文亮白 */
-            --text-muted: #cbd5e1;   /* 輔助白，不能太暗 */
+            --primary-bg: #f8fafc;       /* V2 規範主背景色 */
+            --brand-green: #007E39;      /* V2 規範主要品牌色 */
+            --brand-green-light: #fcfdfc;
+            --brand-amber: #f59e0b;      /* V2 規範警告色 */
+            --brand-red: #ef4444;        /* V2 規範刪除色 */
+            
+            --card-bg: #ffffff;          /* V2 規範卡片背景 */
+            --card-border: #e2e8f0;
+            --text-main: #1e293b;        /* 標題深色 */
+            --text-body: #334155;        /* 內文深灰 */
+            --text-muted: #64748b;       /* 輔助淺灰 */
         }
 
         * {
@@ -35,7 +31,7 @@
         }
 
         body {
-            background: var(--bg-gradient);
+            background: var(--primary-bg);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
@@ -43,26 +39,25 @@
             position: relative;
         }
 
-        /* 抽象動態背景光暈 */
+        /* 抽象動態背景光暈 (輕微點綴，確保 V2 的乾淨明亮感) */
         .blob {
             position: fixed;
-            filter: blur(100px);
+            filter: blur(80px);
             z-index: -1;
-            opacity: 0.35; /* 降低背景光暈亮度，避免搶走卡片主角 */
+            opacity: 0.1; /* 在淺色系極度降低存在感 */
             animation: float 12s infinite ease-in-out alternate;
             border-radius: 50%;
         }
-        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #3b82f6; }
-        .blob-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #8b5cf6; animation-delay: -6s;}
-        .blob-3 { top: 40%; left: 60%; width: 30vw; height: 30vw; background: #0ea5e9; animation-delay: -3s;}
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--brand-green); }
+        .blob-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: var(--brand-amber); animation-delay: -6s;}
 
         @keyframes float {
             0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(30px) scale(1.1); }
+            100% { transform: translateY(20px) scale(1.05); }
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px; /* 遵循 V2 規範桌面端預設寬度 */
             margin: 0 auto;
             padding: 4rem 2rem;
             position: relative;
@@ -78,21 +73,20 @@
 
         .pill-badge {
             display: inline-block;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--primary-glow);
+            background: rgba(0, 126, 57, 0.1);
+            color: var(--brand-green);
             padding: 6px 16px;
-            border-radius: 30px;
+            border-radius: 30px; /* V2 Pill Shape */
             font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: 1px;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
         h1 {
             font-size: 3.5rem;
             font-weight: 900;
-            background: linear-gradient(to right, #ffffff, #bae6fd);
+            background: linear-gradient(to right, var(--brand-green), #059669);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -107,49 +101,48 @@
             color: var(--text-body);
             max-width: 800px;
             margin: 2.5rem auto 0;
-            padding: 3.5rem 2.5rem 2.5rem; /* 加大上方留白，避免被 icon 蓋住 */
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            padding: 3.5rem 2.5rem 2.5rem;
+            background: var(--card-bg); /* V2 白底 */
+            border: 1px solid var(--card-border);
+            border-radius: 20px; /* V2 大圓角 */
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); /* V2 標準盒陰影 */
             position: relative;
         }
 
         .hero-quote::before {
             content: '🎯';
             position: absolute;
-            top: -35px; /* 把圖示往上推 */
+            top: -30px; 
             left: 50%;
             transform: translateX(-50%);
             font-size: 2.8rem;
-            background: var(--bg-dark);
+            background: #ffffff;
             border-radius: 50%;
             padding: 5px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
-            line-height: 1; /* 防止多餘的行高干擾高度 */
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            line-height: 1;
+            border: 2px solid var(--card-border);
         }
 
         .hero-quote strong {
-            color: var(--warning-glow); /* 將首屏重點改為亮黃色 */
+            color: var(--brand-green); /* V2 品牌綠聚焦 */
             font-weight: 800;
         }
 
         /* 內容區塊標題 */
         .section-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 15px;
             font-weight: 800;
-            color: #ffffff;
+            color: var(--text-main);
         }
         
         .section-subtitle {
-            color: var(--primary-glow);
-            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
             margin-bottom: 3rem;
             font-weight: 600;
         }
@@ -162,12 +155,12 @@
             margin-bottom: 6rem;
         }
 
+        /* 卡片設計遵循 V2 */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px; /* 俐落圓角 */
-            padding: 2.5rem 2rem; /* 加大內部 padding */
-            backdrop-filter: blur(16px);
+            border-radius: 20px; /* V2 大圓角 */
+            padding: 2.5rem 2rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -175,52 +168,48 @@
             transform: translateY(40px);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* 強烈陰影拉開層次 */
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05); /* V2 標準陰影 */
         }
 
-        /* 頂部彩色指標：讓所有的卡片在視覺上區別更明顯 */
-        .card:nth-child(1) { border-top: 5px solid #3b82f6; } /* 第一關 - 藍 */
-        .card:nth-child(2) { border-top: 5px solid #8b5cf6; } /* 第二關 - 紫 */
-        .card:nth-child(3) { border-top: 5px solid #10b981; } /* 第三關 - 綠 */
+        /* 卡片頂部利用品牌色微點綴 */
+        .card:nth-child(1) { border-top: 4px solid var(--brand-green); }
+        .card:nth-child(2) { border-top: 4px solid #10b981; }
+        .card:nth-child(3) { border-top: 4px solid #34d399; }
+        .ux-card { border-top: 4px solid var(--brand-green); }
+        .extra-card { border-top: 4px solid var(--brand-amber); }
 
-        .ux-card { border-top: 5px solid #0ea5e9; }
-        .extra-card { border-top: 5px solid #f59e0b; }
-
-        /* 滾動動畫觸發 Class */
         .card.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
         }
 
         .card h3 {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             margin-bottom: 1.2rem;
-            color: #ffffff;
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
 
         .card .time-tag {
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            color: var(--text-muted);
             padding: 4px 14px;
-            border-radius: 20px;
-            font-weight: 700;
+            border-radius: 30px; /* V2 Pill Shape */
+            font-weight: 600;
             display: inline-block;
             margin-bottom: 2rem;
             align-self: flex-start;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid #e2e8f0;
         }
 
         .feature-list {
@@ -229,15 +218,14 @@
         }
 
         .feature-list li {
-            margin-bottom: 1.5rem; /* 加大重點之間的行距 */
+            margin-bottom: 1.5rem;
             position: relative;
-            padding-left: 28px; /* 替 icon 留白 */
+            padding-left: 28px;
             color: var(--text-body);
-            font-size: 1.05rem; /* 字體微調大 */
+            font-size: 1.05rem;
             line-height: 1.6;
         }
 
-        /* 將原本的子項目黑點換成更明顯的圖示 */
         .feature-list li::before {
             content: '📌';
             position: absolute;
@@ -246,39 +234,37 @@
             font-size: 1.1rem;
         }
         
-        /* 💡 最重要的：高對比 highlight 裡面的 strong 重點 */
+        /* 重點字標記遵循 V2 清爽風格 */
         .feature-list li strong {
-            color: var(--warning-glow); /* 重點字使用亮黃色 */
+            color: var(--brand-green); 
             font-weight: 800;
-            background: rgba(251, 191, 36, 0.15); /* 底部加淡黃底色 */
+            background: #f0fdf4;
             padding: 2px 6px;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-right: 4px;
-            box-shadow: inset 0 0 10px rgba(251, 191, 36, 0.1);
         }
 
+        /* V2 進階組件規範: 強調區塊 (.highlight-box) 漸層橘黃 */
         .highlight-box {
-            background: linear-gradient(to right, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05));
-            border-left: 5px solid var(--accent-glow);
+            background: linear-gradient(135deg, #fffbeb, #ffedd5);
+            border-left: 5px solid var(--brand-amber);
             padding: 1.2rem 1.5rem;
             border-radius: 0 8px 8px 0;
             margin-top: 1.5rem;
             font-size: 1rem;
-            color: #ffffff;
-            box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.15);
+            color: var(--text-body);
         }
         
         .highlight-box strong {
-            color: var(--accent-glow); /* 亮綠色重點 */
+            color: var(--brand-amber);
             background: none;
             padding: 0;
-            box-shadow: none;
             font-size: 1.1rem;
             margin-bottom: 6px;
             display: inline-block;
         }
 
-        /* 下方雙欄網格 (UX 與 Extra) */
+        /* 下方 UX 與 Extra - 遵循 V2 Grid 二欄結構 */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -286,19 +272,18 @@
             margin-bottom: 4rem;
         }
 
-        /* 進場動畫設定 */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 響應式修正 */
-        @media (max-width: 768px) {
-            h1 { font-size: 2.2rem; }
-            .hero-quote { font-size: 1.1rem; padding: 2rem 1.5rem; }
+        /* 響應式修正遵循 V2 */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .section-title { font-size: 1.6rem; }
+            .hero-quote { font-size: 1.1rem; padding: 3.5rem 1.5rem 1.5rem; }
             .grid-2 { grid-template-columns: 1fr; }
-            .card { padding: 2rem; }
-            .section-title { font-size: 1.8rem; }
+            .card { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -311,11 +296,11 @@
     <div class="container">
         <!-- 首屏標題區塊 -->
         <header>
-            <div class="pill-badge">INTERNAL TRAINING PITCH</div>
-            <h1>NotebookLM 內部教育訓練教案</h1>
+            
+            <h1>50 分鐘，讓 AI 幫你解決每天最頭痛的三件事</h1>
             <div class="hero-quote">
                 課程核心目標<br><br>
-                「讓大家在 <strong>50 分鐘</strong>的課程內，立刻感受到 AI 能確實解決他們<strong>每天工作上的痛點</strong>。」
+                「拒絕紙上談兵！在 <strong>50 分鐘</strong>內，親自體驗 AI 如何秒解<strong>異常檢討爭議、跨部專案卡關、龐雜營運報表</strong>等每日真實痛點。」
             </div>
         </header>
 
@@ -326,63 +311,51 @@
         <div class="grid-3">
             <!-- 卡片 1 -->
             <div class="card animate-on-scroll">
-                <h3>🎧 第一關：開會錄音神器</h3>
+                <h3 style="font-size: 1.35rem;">🎧 第一關：業務 × 製造 × 售服的異常會議總結秘書</h3>
                 <div class="time-tag">約 15 分鐘</div>
                 <ul class="feature-list">
-                    <li><strong>教材設計：</strong>製作一段 3 分鐘「跨區業務會議實況音檔」，內含不同部門的爭論與情緒。</li>
-                    <li><strong>預期成效：</strong>讓學員上傳音檔，展示 AI 不僅能聽懂吵架內容，還能歸納出「最終決議」與「負責人待辦清單」。</li>
+                    <li><strong>教材設計：</strong>模擬一段「設備異常與客情危機檢討」實況音檔，內含業務、製造與售服的激烈爭論。</li>
+                    <li><strong>預期成效：</strong>讓學員上傳音檔，展示 AI 聽懂多方爭執，並秒速歸納「最終決議」與「各部門待辦清單」。</li>
                 </ul>
-                <div class="highlight-box">
-                    <strong>🌟 最大亮點：</strong><br>
-                    AI 還能把枯燥錄音，直接生成一段像兩位主持人在聊天的 Podcast 廣播。
-                </div>
+                
             </div>
 
             <!-- 卡片 2 -->
             <div class="card animate-on-scroll" style="transition-delay: 0.15s;">
-                <h3>📝 第二關：多輪會議追蹤總管</h3>
+                <h3 style="font-size: 1.35rem;">📝 第二關：電控 × 機構 × 專案的進度彙整專家</h3>
                 <div class="time-tag">約 10 分鐘</div>
                 <ul class="feature-list">
-                    <li><strong>解決痛點：</strong>跨週專案最怕遇到大家互相推託或是進度模糊。</li>
-                    <li><strong>預期成效：</strong>一口氣上傳 5 份連續文字會議紀錄，讓 AI 當貼身秘書，直接橫跨整個月份拉出一張完整的「待辦進度追蹤表」。</li>
+                    <li><strong>教材設計：</strong>上傳多份跨週會議記錄，模擬跨單位（如電控與機構）專案資訊龐雜的實境。</li>
+                    <li><strong>解決痛點：</strong>多場會議導致待辦清單與完成進度雜亂無章，人工彙整既耗時又容易產生資訊落差。</li>
+                    <li><strong>預期成效：</strong>讓 AI 一次讀取所有會議紀錄，立刻梳理出「跨單位專案進度即時看板」，確保資訊同步不漏接。</li>
                 </ul>
             </div>
 
             <!-- 卡片 3 -->
             <div class="card animate-on-scroll" style="transition-delay: 0.3s;">
-                <h3>📊 第三關：財務報表抓漏大師</h3>
+                <h3 style="font-size: 1.35rem;">📊 第三關：各區業務 × 財務分析的抓漏大師</h3>
                 <div class="time-tag">約 15 分鐘</div>
                 <ul class="feature-list">
                     <li><strong>教材設計：</strong>準備一份 3 年份的各區業務與財務數據報表。</li>
-                    <li><strong>預期成效：</strong>讓 AI 充當免費財務稽核，秒速抓出「哪個地區毛利率高得不合理」或是「哪個產品線業績嚴重下滑」。</li>
+                    <li><strong>預期成效：</strong>讓 AI 充當免費的財務稽核，秒速幫忙抓出「哪個地區的毛利率高得不合理」或是「哪個產品線業績嚴重下滑」。</li>
                 </ul>
             </div>
         </div>
 
         <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 4rem 0;">
 
-        <!-- 區塊 2：UX 與延伸挑戰 -->
-        <h2 class="section-title"><span>🛡️</span> 輔助與進階機制</h2>
-        <p class="section-subtitle">方向 2 & 3：確保流暢體驗，同時滿足進階需求。</p>
+        <!-- 區塊 2：延伸挑戰 -->
+        <h2 class="section-title"><span>🚀</span> 課後延伸挑戰</h2>
+        <p class="section-subtitle">方向 3：針對學有餘力或有特定業務需求的同仁，提供進階應用案例。</p>
 
-        <div class="grid-2">
-            <!-- UX 防呆設計 -->
-            <div class="card ux-card animate-on-scroll">
-                <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">⚙️ 徹底防呆設計</h3>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">確保實體課程進度絕不卡關。</p>
-                <ul class="feature-list">
-                    <li><strong>⚡ 快速通關連結：</strong>在網頁教材裡建置專屬網址，一旦點擊就能開啟預先餵好檔案的專案，學員立即無縫接軌繼續練習。</li>
-                    <li><strong>📋 一鍵發問：</strong>練習用的提示詞皆配備「一鍵複製」按鈕，輕點即可貼上發問，確保所有人都能有順暢操作體驗。</li>
-                </ul>
-            </div>
-
+        <div style="margin-bottom: 4rem;">
             <!-- 課外挑戰區 -->
-            <div class="card extra-card animate-on-scroll" style="transition-delay: 0.15s;">
+            <div class="card extra-card animate-on-scroll" style="opacity: 1; transform: translateY(0); border-top: 4px solid var(--brand-amber);">
                 <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">🎁 課外挑戰區</h3>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">發生頻率較低、難度較高之內容。</p>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">針對高階需求與特定場景的進階應用。</p>
                 <ul class="feature-list">
-                    <li><strong>📚 內容取捨：</strong>「十萬字法規分析」與「產業趨勢對比財報」需要雙文件比對，資訊量較大，若硬塞在 1 小時內容中容易消化不良。</li>
-                    <li><strong>🚀 課後延伸：</strong>對學有餘力或有業務需求的同仁，這部份移出主線，下課後可隨時點擊連結帶回家挑戰高階用法。</li>
+                    <li><strong>📚 內容精選：</strong>收錄「全球產業展望」與「財務數據」等高難度場景，適合課後深度鑽研。</li>
+                    <li><strong>🚀 課後延伸：</strong>對有業務需求的同仁，可隨時點擊連結開啟預設專案，挑戰 AI 極限用法。</li>
                 </ul>
             </div>
         </div>
