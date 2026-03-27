@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讓 AI 幫你解決上班最頭痛的三件事</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007E39;
+            --secondary-color: #2D6A4F;
+            --accent-color: #f59e0b;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --dark-bg: #1a1a2e;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text-dark);
+            background: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(145,100%,96%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(156,100%,94%,1) 0, transparent 50%);
+            min-height: 100vh;
+        }
+
+        .app-container { display: flex; min-height: 100vh; width: 100%; }
+
+        #sidebar {
+            width: 320px; background: rgba(26, 26, 46, 0.95); backdrop-filter: blur(10px);
+            color: var(--text-light); padding: 30px 0; position: fixed; height: 100vh;
+            overflow-y: auto; z-index: 50; transition: transform 0.3s ease-in-out;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header { padding: 0 25px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
+        .sidebar-header h2 { font-size: 1.6rem; font-weight: 900; color: #4ade80; letter-spacing: 0.5px; }
+
+        .sidebar-menu { list-style: none; padding: 0; }
+        .sidebar-item {
+            padding: 15px 25px; cursor: pointer; transition: all 0.2s; display: flex;
+            align-items: center; gap: 12px; font-weight: 500; font-size: 1.05rem; border-left: 4px solid transparent;
+        }
+        .sidebar-item:hover { background-color: rgba(255, 255, 255, 0.05); border-left-color: rgba(74, 222, 128, 0.5); }
+        .sidebar-item.active { background-color: var(--primary-color); color: white; font-weight: 700; border-left-color: #4ade80; }
+
+        #main-content { margin-left: 320px; flex: 1; padding: 40px; width: calc(100% - 320px); }
+        #content-display { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; }
+
+        .lesson-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .lesson-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lesson-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white; padding: 50px 40px; border-bottom: 5px solid var(--accent-color);
+        }
+        .lesson-header h2 { font-size: 2.2em; font-weight: 800; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+
+        .meta-tag {
+            background: rgba(255, 255, 255, 0.15); padding: 6px 16px; border-radius: 9999px;
+            font-size: 0.9em; backdrop-filter: blur(8px); font-weight: 600; border: 1px solid rgba(255,255,255,0.3);
+            margin-right: 8px;
+        }
+
+        .lesson-content { padding: 40px; font-size: 1.05rem; }
+        .section-title { color: var(--primary-color); font-size: 1.8em; margin: 40px 0 20px 0; padding-bottom: 12px; border-bottom: 3px solid var(--primary-color); font-weight: 800; }
+        .subsection-title { color: var(--secondary-color); font-size: 1.4em; margin: 30px 0 15px 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        .code-container { position: relative; margin: 20px 0; }
+        .code-block { background: #1e293b; color: #f8fafc; padding: 20px 25px 20px 20px; border-radius: 12px; overflow-x: auto; margin: 0; font-family: monospace; font-size: 0.95em; line-height: 1.7; border: 1px solid #334155; }
+        .copy-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+        .copy-btn:hover { background: rgba(255,255,255,0.25); }
+        .copy-btn.copied { background: var(--success-color); border-color: var(--success-color); }
+        .quick-links { background: var(--light-bg); border-radius: 16px; padding: 25px; margin: 30px 0; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; border: 1px solid var(--border-color); }
+        .btn-pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: white; border-radius: 9999px; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-dark); font-weight: 600; transition: all 0.2s; }
+        .btn-pill:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); transform: translateY(-1px); }
+
+        .content-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 25px 0; box-shadow: var(--shadow); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .content-table thead { background: linear-gradient(to right, #f1f5f9, #edf2f7); color: var(--text-dark); }
+        .content-table th { font-weight: 900; border-bottom: 3px solid var(--primary-color); padding: 18px 16px; text-align: left; }
+        .content-table td { padding: 16px; border-bottom: 1px solid var(--border-color); }
+
+        #menu-toggle-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 100; background: var(--primary-color); color: white; border: none; padding: 12px 18px; border-radius: 12px; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-100%); width: 300px; }
+            #sidebar.open { transform: translateX(0); }
+            #main-content { margin-left: 0; width: 100%; padding-top: 80px; }
+            #menu-toggle-btn { display: block; }
+        }
+    </style>
+</head>
+
+<body>
+    <button id="menu-toggle-btn">選單</button>
+
+    <div class="app-container">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h2>學習小天地</h2>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 5px;"></p>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active" onclick="showLesson('intro')"><span>🏠</span> 課程簡介與準備</li>
+                <li class="sidebar-item" onclick="showLesson('lesson-audio')"><span>🎧</span> 第一關：業務 × 製造 × 電服的異常會議總結秘書</li>
+                <li class="sidebar-item" onclick="showLesson('lesson-text')"><span>📝</span> 第二關：專案進度彙整專家</li>
+                <li class="sidebar-item" onclick="showLesson('lesson-finance')"><span>📊</span> 第三關：財務分析抓漏大師</li>
+                <li class="sidebar-item" onclick="showLesson('lesson-extra')"><span>🚀</span> 課外挑戰：從實戰到生活</li>
+            </ul>
+        </nav>
+
+        <main id="main-content">
+            <div id="content-display">
+                <section id="intro" class="lesson-section active">
+                    <div class="lesson-header">
+                        <h2>讓 AI 幫你解決上班最頭痛的三件事</h2>
+                        
+                    </div>
+                    <div class="lesson-content">
+                        <div class="alert alert-success" style="background: #ecfdf5; border-left: 5px solid #10b981; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                            <h3 class="font-bold text-xl text-green-800 mb-2">🤔 為什麼不用 ChatGPT 就好？</h3>
+                            <p class="text-green-900">一般的 AI 很容易「不懂裝懂、亂編內容 (產生幻覺)」，這在看財務或合約時非常危險。<br>
+                            <strong>NotebookLM 的超能力是：「它只會根據你上傳的文件回答」</strong>。給它看報表，它就是專屬財務長；給它查會議紀錄，它就是專屬秘書，絕對不會瞎掰！</p>
+                        </div>
+                        <div class="section-title">📦 先把這些材料下載下來</div>
+                        <div class="quick-links">
+                            <a href="prompt_guide.docx" class="btn-pill">💡 提問小助手 (CREATE 公式)</a>
+                            <a href="samples/finance_report.docx" class="btn-pill">📁 財務範例數據 (3年分)</a>
+                            <a href="samples/sales_meetings.zip" class="btn-pill">📁 專案會議紀錄 (5份)</a>
+                            <a href="現場異常與客情危機檢討會議.mp3" class="btn-pill">🎧 會議實況錄音(多角對話)</a>
+                        </div>
+                        
+                        <div class="section-title mt-10">🚀 快速上手：兩種方式任你選</div>
+                        <div class="flex flex-col md:flex-row gap-6 mt-6">
+                            <!-- Option A -->
+                            <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                                <h4 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">🎯 方式 A：自己動手做 (完整體驗)</h4>
+                                <ol class="list-decimal list-inside space-y-3 text-slate-700">
+                                    <li>前往 <a href="https://notebooklm.google.com" target="_blank" class="text-green-700 underline font-bold">NotebookLM 官網</a> 登入。</li>
+                                    <li>點選「New Notebook」建立練習區。</li>
+                                    <li>點左側的「+ Add source」，上傳剛下載的練習檔案。</li>
+                                    <li>確定資料有打勾選擇。</li>
+                                    <li>在下方對話框輸入問題，按 Enter！</li>
+                                </ol>
+                            </div>
+                            <!-- Option B -->
+                            <div class="flex-1 bg-green-50 p-6 rounded-2xl shadow-sm border border-green-200 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">極速版</div>
+                                <h4 class="text-xl font-bold text-green-800 mb-4 border-b border-green-200 pb-2">⚡ 方式 B：點擊老師的連結 (最快)</h4>
+                                <p class="text-green-900 mb-3">不需要自己下載和上傳檔案！老師已經把不同關卡的資料預先上傳好了。</p>
+                                <ol class="list-decimal list-inside space-y-3 text-green-900">
+                                    <li>直接點擊各關卡提供的<strong>「🔗 偷吃步：預載筆記本」</strong>連結。</li>
+                                    <li>點擊網頁右上角的 <strong>「Save to your Notebooks (儲存)」</strong>。</li>
+                                    <li>立刻就可以開始問問題了！</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="lesson-audio" class="lesson-section">
+                    <div class="lesson-header">
+                        <h2>第一關：業務 × 製造 × 電服的異常會議總結秘書</h2>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="section-title">連語氣跟衝突都能聽懂</div>
+                        
+                        <div class="alert alert-warning" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                            <strong>🔗 偷吃步：</strong>不想自己上傳？直接點擊 <a href="https://notebooklm.google.com/notebook/47421467-a443-482d-b4ad-1c5698eea545" target="_blank" class="text-orange-700 underline font-bold">這份老師準備好的 NotebookLM</a>，儲存後直接開始問問題！
+                        </div>
+
+                        <p>請上傳 <strong><a href="現場異常與客情危機檢討會議.mp3" class="text-green-700 underline font-bold" download>[現場異常與客情危機檢討音檔]</a></strong>。內含業務、製造與電服三方的激烈爭執，我們來看看 AI 如何梳理混沌：</p>
+
+                        <p class="font-bold mt-6 text-green-700">📌 任務 1：三方衝突拆解 (業務 vs 製造 vs 電服)</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請詳細分析這段錄音。<br>1. 業務、製造、電服三方爭執核心點分別是什麼？<br>2. 現場異常的原因目前有共識嗎？<br>3. 大主管（或是決策者）最後裁示的責任歸屬為何？</div>
+                        </div>
+
+                        <p class="font-bold mt-6 text-green-700">📌 任務 2：秒出會議總結 (找出部門待辦事項)</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請根據這份吵雜的錄音，幫我整理出一份極度專業的「會議決議表」。<br>表格欄位：部門 / 待辦事項 / 具體截止時間 / 需回報對象。</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="lesson-text" class="lesson-section">
+                    <div class="lesson-header">
+                        <h2>第二關：專案進度彙整專家</h2>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="section-title">跨時間維度的資料追蹤</div>
+
+                        <div class="alert alert-warning" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                            <strong>🔗 偷吃步：</strong>不想自己上傳？直接點擊 <a href="#" target="_blank" class="text-orange-700 underline font-bold" onclick="alert('請老師在此放入新增的 NotebookLM 連結')">這份老師預先準備好的 NotebookLM</a>，儲存後直接開始問問題！
+                        </div>
+
+                        <p>跨越多週、涉及多個單位（如研發、電服、資材與製造）的進度最難彙整。請上傳 <strong><a href="samples/sales_meetings.zip" class="text-green-700 underline font-bold">[5 份機台開發會議紀錄]</a></strong>，我們來看看 AI 如何幫你把碎片拼湊完整：</p>
+                        
+                        <p class="font-bold mt-6 text-green-700">📌 任務 1：跨會議進度看板 (解決資訊雜亂)</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請扮演一位高階專案經理 (PM)。<br>這是最近 5 場黃豆機台(SB-900)開發會議的記錄，請幫我整理出一張「跨部門專案進度看板」。<br>表格要能反映：重要系統狀態 / 研發部當前瓶頸 / 電服部(PLC/測試)進度 / 資材與製造狀況。</div>
+                        </div>
+
+                        <p class="font-bold mt-6 text-green-700">📌 任務 2：潛在風險抓漏</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">讀完這 5 份紀錄，你覺得在「跨部門協作」上，有哪些事情是「互相推諉」或是「可能導致交期延宕」的未爆彈？請條列並給予 PM 建議。</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="lesson-finance" class="lesson-section">
+                    <div class="lesson-header">
+                        <h2>第三關：各區業務 × 財務分析抓漏大師</h2>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="section-title">讓數據自己說真話</div>
+                        
+                        <div class="alert alert-warning" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                            <strong>🔗 偷吃步：</strong>不想自己上傳？直接點擊 <a href="https://notebooklm.google.com/notebook/da85d10b-01da-4412-b033-d59b2bca6873" target="_blank" class="text-orange-700 underline font-bold">這份老師預先準備好的 NotebookLM</a>，儲存後直接開始問問題！
+                        </div>
+
+                        <p>跨區財報最怕「看報表看到眼花，無法快速掌握各區業績狀況」。上傳 <strong><a href="samples/finance_report.docx" class="text-green-700 underline font-bold">[財務範例數據報告]</a></strong>，我們來看看 AI 怎麼抓出異常點。</p>
+                        
+                        <p class="font-bold mt-6 text-green-700">🔍 任務 1：抓錯王 (找虧錢或賺太離譜的地方)</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">(Role) 你是資深財務稽核。(Context) 這是我們三年的帳務資料。(Task) 請幫我找出有沒有「虧錢」或是「毛利高到不正常 (>70%)」的地方。(Format) 請用表格列出來，標註年度、地區、產品、毛利多少、為什麼覺得奇怪。</div>
+                        </div>
+ 
+                        <p class="font-bold mt-6 text-green-700">📊 任務 2：對比分析 (看這兩年差在哪)</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請對比 2024 跟 2025 二年的數據，哪些產品的表現明顯變差了？為什麼？</div>
+                        </div>                     
+                    </div>
+                </section>
+
+                <section id="lesson-extra" class="lesson-section">
+                    <div class="lesson-header" style="background: linear-gradient(135deg, #475569, #334155); border-bottom: 5px solid #94a3b8;">
+                        <h2>🎁 課外挑戰：從實戰到生活！隨手搞定日常大小事</h2>
+                        <p>上完硬核的黃豆機開發專案後，來點輕鬆的！看看 AI 如何幫你秒排旅遊行程、終結家電選購的選擇困難症！</p>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="section-title">【挑戰一】YouTube 百萬點閱遊記，秒變專屬行程表 ✈️</div>
+                        
+                        <div class="alert alert-warning" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                            <strong>🔗 偷吃步：</strong>不想自己找素材？直接點擊 <a href="https://notebooklm.google.com/notebook/9f55b797-9627-4d84-89e2-de77450c1695" target="_blank" class="text-orange-700 underline font-bold">這份老師預先準備好的 NotebookLM</a>，儲存後直接開始問問題！<br>
+                            （或者挑戰自己：自行建立筆記本，貼入以下 Vlog 網址並上傳「京都地鐵路線圖」👉 <a href="https://www.city.kyoto.lg.jp/kotsu/page/0000019770.html" target="_blank" class="text-blue-700 font-bold underline">官方圖檔下載</a>）<br>
+                            1. Vlog 網址 1: <code>https://www.youtube.com/watch?v=Iq82jF-14WU</code><br>
+                            2. Vlog 網址 2: <code>https://www.youtube.com/watch?v=-A5WZRWXusU</code>
+                        </div>
+
+                        <p>週末想帶家人出國自助旅行 (例如京都)，但沒時間看那些幾十分鐘的 Vlog 慢慢做功課？直接將 YouTube 網址與觀光地圖交給 AI 處理！</p>
+                        
+                        <div class="code-container mt-4">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請幫我彙整這幾部影片中推薦的「必吃在地美食」與「私房景點」。
+接著，請參考我上傳的「京都地鐵路線圖」與你內建的地理知識，將這些地點依照『地理位置相近、沿著地鐵線順暢不繞路』的原則，幫我規劃成一個完美的「三天兩夜」行程表。
+（請在每個景點旁標註是哪一部影片推薦的，並簡單說明點到點的交通方式）</div>
+                        </div>
+
+                        <div class="section-title mt-12">【挑戰二】拯救婚姻神器：洗碗機終極對決 (跨媒體評測比較) 🍽️</div>
+
+                        <div class="alert alert-warning" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                            <strong>🔗 偷吃步：</strong>不想自己貼網址嗎？直接點擊 <a href="https://notebooklm.google.com/notebook/33c5b90c-adfb-48b4-82e0-23782b7ebcb4" target="_blank" class="text-orange-700 underline font-bold">這份老師預先準備好的 NotebookLM</a>，裡面已經幫您把評測都匯入好了！<br>
+                            （或者挑戰自己：在同一個 NotebookLM 筆記本中，手動新增以下三個跨媒體來源：）<br>
+                            1. YouTube 實測: <code>https://www.youtube.com/watch?v=ixB0gSY8RPA</code><br>
+                            2. 網頁開箱評估: <code>https://today.line.me/tw/v2/article/x2LE87q</code><br>
+                            3. PTT 討論區: <code>https://www.ptt.cc/bbs/E-appliance/M.1770777071.A.AF0.html</code>
+                        </div>
+
+                        <p>想買一台洗碗機，但是網路上的開箱影片跟 PTT/Mobile01 論壇文章眾說紛紜，不知道怎麼挑選最符合需求的機型？</p>
+
+                        <div class="code-container mt-4 mb-10">
+                            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+                            <div class="code-block">請綜合這三份文字與影片資料：
+1. 整理出最常被討論的洗碗機品牌的優缺點對照表。
+2. 針對「洗淨力」和「運轉噪音」這兩個痛點，分析哪一台比較適合淺眠的小家庭？
+3. 網友在論壇中最常抱怨的缺點是什麼？</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showLesson(lessonId) {
+            document.querySelectorAll('.lesson-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(lessonId).classList.add('active');
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick').includes(lessonId)) item.classList.add('active');
+            });
+            document.getElementById('sidebar').classList.remove('open');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        document.getElementById('menu-toggle-btn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        function copyPrompt(btn) {
+            const codeBlock = btn.nextElementSibling;
+            const textToCopy = codeBlock.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ 已複製';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
